@@ -3,22 +3,30 @@ import User from "../models/User.js";
 
 const router = express.Router();
 
-// POST route to save user data
-router.post("/", async (req, res) => {
+router.post("/submit-form", async (req, res) => {
   try {
-    const { name, email, phone, age } = req.body;
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: "Email already registered!" });
-    }
+    console.log("Received request body:", req.body); // Log the request body
+    
+    const { fullName, email, phone, level, department, interestedCourse, image } = req.body;
+    const newUser = new User({
+      name: fullName,
+      email,
+      phone,
+      level,
+      department,
+      interestedCourse,
+      image: image ? image : null
+    });
 
-    const user = new User({ name, email, phone, age });
-    await user.save();
-
-    res.status(201).json({ message: "User registered successfully!", user });
+    await newUser.save();
+    res.status(201).json({ message: "User registered successfully!" });
   } catch (error) {
+    console.error("Error:", error.message); // Log the error message
     res.status(400).json({ error: error.message });
   }
 });
+
+
+
 
 export default router;

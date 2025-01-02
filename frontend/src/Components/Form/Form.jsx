@@ -3,10 +3,6 @@ import { Check, AlertCircle, Upload } from "lucide-react";
 import litImage from "../../assets/LIT.jpg";
 import logo from "../../assets/logo.png";
 
-
-
-
-
 const BeautifulForm = () => {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -65,18 +61,20 @@ const BeautifulForm = () => {
     const errors = {};
     if (!formData.fullName) errors.fullName = "Name is required";
     if (!formData.email) errors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Invalid email";
+    else if (!/\S+@\S+\.\S+/.test(formData.email))
+      errors.email = "Invalid email";
     if (!formData.phone) errors.phone = "Phone number is required";
-    else if (!/^\d{10,15}$/.test(formData.phone)) errors.phone = "Invalid phone number";
+    else if (!/^\d{10,15}$/.test(formData.phone))
+      errors.phone = "Invalid phone number";
     if (!formData.level) errors.level = "Level is required";
     if (!formData.department) errors.department = "Department is required";
-    if (!formData.interestedCourse) errors.interestedCourse = "Course selection is required";
+    if (!formData.interestedCourse)
+      errors.interestedCourse = "Course selection is required";
     if (!formData.image) errors.image = "Profile image is required";
     return errors;
   };
 
   const errors = validate();
-
 
   if (submitted) {
     return (
@@ -114,57 +112,56 @@ const BeautifulForm = () => {
     );
   }
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setTouched({
-      fullName: true,
-      email: true,
-      phone: true,
-      level: true,
-      department: true,
-      interestedCourse: true,
-      image: true
-    });
   
-    if (Object.keys(errors).length === 0) {
-      try {
-        const formDataToSubmit = new FormData();
-        formDataToSubmit.append("fullName", formData.fullName);
-        formDataToSubmit.append("email", formData.email);
-        formDataToSubmit.append("phone", formData.phone);
-        formDataToSubmit.append("level", formData.level);
-        formDataToSubmit.append("department", formData.department);
-        formDataToSubmit.append("interestedCourse", formData.interestedCourse);
-        if (formData.image) {
-          formDataToSubmit.append("image", formData.image);
-        }
+    const formDataToSend = {
+      fullName: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      level: formData.level,
+      department: formData.department,
+      interestedCourse: formData.interestedCourse,
+      image: formData.image ? formData.image.name : "" // Send image name or empty string
+    };
   
-        const response = await fetch("http://localhost:5300/api/submit-form", {
-          method: "POST",
-          body: formDataToSubmit,
-        });
+    console.log("Submitting form data:", formDataToSend); // Log payload
   
-        if (response.ok) {
-          setSubmitted(true);
-          console.log("Form submitted:", formData);
-        } else {
-          console.error("Error submitting form:", response.status);
-        }
-      } catch (error) {
-        console.error("Request failed:", error);
+    try {
+      const response = await fetch("http://localhost:5300/api/submit-form", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formDataToSend)
+      });
+  
+      console.log("Response status:", response.status); // Log response status
+  
+      if (!response.ok) {
+        throw new Error(`HTTP status ${response.status}`);
       }
+  
+      const result = await response.json();
+      console.log("Form submitted successfully:", result);
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Error submitting form:", error);
     }
   };
+  
   
 
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url(${litImage})`, backgroundAttachment: "fixed" }}
+      style={{
+        backgroundImage: `url(${litImage})`,
+        backgroundAttachment: "fixed"
+      }}
     >
       <div className="h-max max-w-2xl p-6">
-      <div className="max-w-xl w-full bg-white rounded-xl shadow-lg p-6 md:p-8 overflow-y-auto">
+        <div className="max-w-xl w-full bg-white rounded-xl shadow-lg p-6 md:p-8 overflow-y-auto">
           <div className="text-center mb-6">
             <img
               src={logo}
@@ -173,7 +170,7 @@ const BeautifulForm = () => {
             />
 
             <h2 className="text-3xl font-bold text-purple-800 mb-2">
-            Want to be a Member of Ladies in Tech, AUL
+              Want to be a Member of Ladies in Tech?
             </h2>
             <div className="w-20 h-1 bg-purple-500 mx-auto rounded-full"></div>
           </div>
@@ -257,7 +254,7 @@ const BeautifulForm = () => {
               )}
             </div>
 
-{/* Department */}
+            {/* Department */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Department
@@ -281,8 +278,7 @@ const BeautifulForm = () => {
                   {errors.department}
                 </div>
               )}
-
-</div>
+            </div>
             {/* Level */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -312,8 +308,6 @@ const BeautifulForm = () => {
                 </div>
               )}
             </div>
-
-            
 
             {/* Interested Course */}
             <div>
