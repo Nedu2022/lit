@@ -25,10 +25,6 @@ export default {
         "2xl": "36px",
         "3xl": "48px",
       },
-      colors: {
-        primaryPink: "#DDB7B9",
-        primaryBeige: "#F2EDE8",
-      },
     },
   },
   plugins: [],

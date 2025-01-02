@@ -5,9 +5,8 @@ const router = express.Router();
 
 router.post("/submit-form", async (req, res) => {
   try {
-    console.log("Received request body:", req.body); // Log the request body
-    
     const { fullName, email, phone, level, department, interestedCourse, image } = req.body;
+
     const newUser = new User({
       name: fullName,
       email,
@@ -21,10 +20,20 @@ router.post("/submit-form", async (req, res) => {
     await newUser.save();
     res.status(201).json({ message: "User registered successfully!" });
   } catch (error) {
-    console.error("Error:", error.message); // Log the error message
-    res.status(400).json({ error: error.message });
+    if (error.code === 11000) { // Duplicate key error code
+      const duplicateField = Object.keys(error.keyPattern)[0];
+      res.status(400).json({ error: `${duplicateField} already exists. Please use a different ${duplicateField}.` });
+    } else if (error.name === 'ValidationError') { 
+      const field = Object.keys(error.errors)[0];
+      const message = error.errors[field].message;
+      res.status(400).json({ error: message });
+    } else {
+      console.error("Error:", error.message); // Log the error message
+      res.status(400).json({ error: error.message });
+    }
   }
 });
+
 
 
 

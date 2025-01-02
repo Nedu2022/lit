@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Check, AlertCircle, Upload } from "lucide-react";
 import litImage from "../../assets/LIT.jpg";
 import logo from "../../assets/logo.png";
+import ErrorModal from "./ErrorModal";
+
 
 const BeautifulForm = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +19,8 @@ const BeautifulForm = () => {
   const [touched, setTouched] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
+  const [showErrorModal, setShowErrorModal] = useState(false); 
+  const [modalMessage, setModalMessage] = useState("");
 
   const courses = [
     "Web Development",
@@ -125,8 +129,6 @@ const BeautifulForm = () => {
       image: formData.image ? formData.image.name : "" // Send image name or empty string
     };
   
-    console.log("Submitting form data:", formDataToSend); // Log payload
-  
     try {
       const response = await fetch("http://localhost:5300/api/submit-form", {
         method: "POST",
@@ -136,19 +138,34 @@ const BeautifulForm = () => {
         body: JSON.stringify(formDataToSend)
       });
   
-      console.log("Response status:", response.status); // Log response status
-  
       if (!response.ok) {
-        throw new Error(`HTTP status ${response.status}`);
+        const errorData = await response.json();
+        if (errorData.error) {
+          setModalMessage(errorData.error); 
+          setShowErrorModal(true); 
+        }
+        return;
       }
   
-      const result = await response.json();
-      console.log("Form submitted successfully:", result);
+      await response.json();
       setSubmitted(true);
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        level: "",
+        department: "",
+        interestedCourse: "",
+        image: null
+      });
+      setPreviewImage(null);
     } catch (error) {
       console.error("Error submitting form:", error);
+      setModalMessage(error.message);
+      setShowErrorModal(true);
     }
   };
+  
   
   
 
@@ -160,6 +177,14 @@ const BeautifulForm = () => {
         backgroundAttachment: "fixed"
       }}
     >
+
+{showErrorModal && (
+        <ErrorModal
+          message={modalMessage}
+          onClose={() => setShowErrorModal(false)}
+        />
+      )}
+
       <div className="h-max max-w-2xl p-6">
         <div className="max-w-xl w-full bg-white rounded-xl shadow-lg p-6 md:p-8 overflow-y-auto">
           <div className="text-center mb-6">
