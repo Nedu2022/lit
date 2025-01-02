@@ -118,9 +118,49 @@ const BeautifulForm = () => {
     );
   }
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  
+  //   const formDataToSend = {
+  //     fullName: formData.fullName,
+  //     email: formData.email,
+  //     phone: formData.phone,
+  //     level: formData.level,
+  //     department: formData.department,
+  //     interestedCourse: formData.interestedCourse,
+  //     image: formData.image ? formData.image.name : "" // Send image name or empty string
+  //   };
+  
+  //   try {
+  //     const response = await fetch("http://localhost:5300/api/submit-form", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify(formDataToSend)
+  //     });
+  
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       if (errorData.error) {
+  //         setModalMessage(errorData.error); 
+  //         setShowErrorModal(true); 
+  //       }
+  //       return;
+  //     }
+  
+  //     await response.json();
+  //     // navigate("/waitlist-dashboard", { state: { fullName: formData.fullName } });
+  //     navigate("/login");
+  //   } catch (error) {
+  //     console.error("Error submitting form:", error);
+  //     setModalMessage(error.message);
+  //     setShowErrorModal(true);
+  //   }
+  // };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
     const formDataToSend = {
       fullName: formData.fullName,
       email: formData.email,
@@ -128,29 +168,23 @@ const BeautifulForm = () => {
       level: formData.level,
       department: formData.department,
       interestedCourse: formData.interestedCourse,
-      image: formData.image ? formData.image.name : "" // Send image name or empty string
+      image: formData.image ? formData.image.name : "", // Send image name or URL
     };
-  
     try {
-      const response = await fetch("http://localhost:5300/api/submit-form", {
+      const response = await fetch("http://localhost:5300/api/register", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formDataToSend)
+        body: JSON.stringify(formDataToSend),
       });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (errorData.error) {
-          setModalMessage(errorData.error); 
-          setShowErrorModal(true); 
-        }
-        return;
+      if (response.ok) {
+        navigate("/login");
+      } else {
+        const data = await response.json();
+        setModalMessage(data.error);
+        setShowErrorModal(true);
       }
-  
-      await response.json();
-      navigate("/waitlist-dashboard", { state: { fullName: formData.fullName } });
     } catch (error) {
       console.error("Error submitting form:", error);
       setModalMessage(error.message);

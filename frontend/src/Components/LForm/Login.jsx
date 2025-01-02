@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Check, AlertCircle } from "lucide-react";
 import litImage from "../../assets/LIT.jpg";
 import logo from "../../assets/logo.png";
 import ErrorModal from "../ErrorModal";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -73,12 +75,10 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const formDataToSend = {
-      fullName: formData.fullName,
       email: formData.email,
+      fullName: formData.fullName,
     };
-
     try {
       const response = await fetch("http://localhost:5300/api/login", {
         method: "POST",
@@ -87,24 +87,21 @@ const LoginForm = () => {
         },
         body: JSON.stringify(formDataToSend),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (errorData.error) {
-          setModalMessage(errorData.error);
-          setShowErrorModal(true);
-        }
-        return;
+      const data = await response.json();
+      if (response.ok) {
+        navigate("/waitlist-dashboard", { state: { fullName: formData.fullName } });
+      } else {
+        setModalMessage(data.error);
+        setShowErrorModal(true);
       }
-
-      await response.json();
-      setSubmitted(true);
     } catch (error) {
       console.error("Error submitting form:", error);
       setModalMessage(error.message);
       setShowErrorModal(true);
     }
   };
+  
+  
 
   return (
     <div
@@ -120,7 +117,6 @@ const LoginForm = () => {
           onClose={() => setShowErrorModal(false)}
         />
       )}
-
       <div className="h-max max-w-2xl p-6">
         <div className="max-w-xl w-full bg-white rounded-xl shadow-lg p-6 md:p-8 overflow-y-auto">
           <div className="text-center mb-6">
@@ -134,7 +130,6 @@ const LoginForm = () => {
             </h2>
             <div className="w-20 h-1 bg-purple-500 mx-auto rounded-full"></div>
           </div>
-
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Full Name */}
             <div>
@@ -161,7 +156,6 @@ const LoginForm = () => {
                 </div>
               )}
             </div>
-
             {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -187,7 +181,6 @@ const LoginForm = () => {
                 </div>
               )}
             </div>
-
             {/* Submit Button */}
             <button
               type="submit"

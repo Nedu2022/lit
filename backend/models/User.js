@@ -1,18 +1,14 @@
 import mongoose from "mongoose";
 
-const UserSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true },
+const userSchema = new mongoose.Schema({
+  fullName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  phone: { type: String, required: true, unique: true, match: [/^\d{11}$/, "Invalid phone number"] },
+  phone: { type: String, required: true },
   level: { type: String, required: true },
   department: { type: String, required: true },
   interestedCourse: { type: String, required: true },
-  image: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
+  image: { type: String }, // Optional field for profile image URL or file name
 });
 
-
-const User = mongoose.model("User", UserSchema);
-
-
+const User = mongoose.model("User", userSchema);
 export default User;

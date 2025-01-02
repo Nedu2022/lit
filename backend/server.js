@@ -17,11 +17,20 @@ mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 100000
+    serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
   })
-
   .then(() => console.log("Connected to MongoDB"))
-  .catch((error) => console.log("MongoDB connection error:", error));
+  .catch((error) => console.error("MongoDB connection error:", error));
+
+mongoose.connection.on('error', err => {
+  console.error(`Mongoose connection error: ${err.message}`);
+});
+mongoose.connection.on('disconnected', () => {
+  console.warn('Mongoose connection lost');
+});
+mongoose.connection.on('reconnected', () => {
+  console.log('Mongoose reconnected');
+});
 
 // Routes
 app.use("/api", userRoutes);
