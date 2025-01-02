@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Check, AlertCircle, Upload } from "lucide-react";
 import litImage from "../../assets/LIT.jpg";
 import logo from "../../assets/logo.png";
-import ErrorModal from "./ErrorModal";
+import ErrorModal from "../ErrorModal";
 
 
 const BeautifulForm = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -148,17 +150,7 @@ const BeautifulForm = () => {
       }
   
       await response.json();
-      setSubmitted(true);
-      setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        level: "",
-        department: "",
-        interestedCourse: "",
-        image: null
-      });
-      setPreviewImage(null);
+      navigate("/waitlist-dashboard", { state: { fullName: formData.fullName } });
     } catch (error) {
       console.error("Error submitting form:", error);
       setModalMessage(error.message);
@@ -167,8 +159,6 @@ const BeautifulForm = () => {
   };
   
   
-  
-
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-no-repeat"
@@ -433,6 +423,17 @@ const BeautifulForm = () => {
               <span>Submit Application</span>
             </button>
           </form>
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-600">
+              Already have an account?{" "}
+              <a
+                href="/login"
+                className="text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Login
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </div>
