@@ -118,49 +118,22 @@ const BeautifulForm = () => {
     );
   }
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  
-  //   const formDataToSend = {
-  //     fullName: formData.fullName,
-  //     email: formData.email,
-  //     phone: formData.phone,
-  //     level: formData.level,
-  //     department: formData.department,
-  //     interestedCourse: formData.interestedCourse,
-  //     image: formData.image ? formData.image.name : "" // Send image name or empty string
-  //   };
-  
-  //   try {
-  //     const response = await fetch("http://localhost:5300/api/submit-form", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json"
-  //       },
-  //       body: JSON.stringify(formDataToSend)
-  //     });
-  
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       if (errorData.error) {
-  //         setModalMessage(errorData.error); 
-  //         setShowErrorModal(true); 
-  //       }
-  //       return;
-  //     }
-  
-  //     await response.json();
-  //     // navigate("/waitlist-dashboard", { state: { fullName: formData.fullName } });
-  //     navigate("/login");
-  //   } catch (error) {
-  //     console.error("Error submitting form:", error);
-  //     setModalMessage(error.message);
-  //     setShowErrorModal(true);
-  //   }
-  // };
   
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // First make sure form validation passes
+    const formErrors = validate();
+    if (Object.keys(formErrors).length > 0) {
+      // Mark all fields as touched to show validation errors
+      const touchedFields = {};
+      Object.keys(formData).forEach(key => {
+        touchedFields[key] = true;
+      });
+      setTouched(touchedFields);
+      return; // Don't submit if validation fails
+    }
+    
     const formDataToSend = {
       fullName: formData.fullName,
       email: formData.email,
@@ -168,9 +141,11 @@ const BeautifulForm = () => {
       level: formData.level,
       department: formData.department,
       interestedCourse: formData.interestedCourse,
-      image: formData.image ? formData.image.name : "", // Send image name or URL
+      image: formData.image ? formData.image.name : "", // For now, just send the name
     };
+    
     try {
+      console.log("Submitting registration form...");
       const response = await fetch("http://localhost:5300/api/register", {
         method: "POST",
         headers: {
@@ -178,16 +153,22 @@ const BeautifulForm = () => {
         },
         body: JSON.stringify(formDataToSend),
       });
+      
+      const data = await response.json();
+      
       if (response.ok) {
-        navigate("/login");
+        console.log("Registration successful!");
+        setSubmitted(true); // Show the success message
+        // Don't navigate away immediately
+        setTimeout(() => navigate("/login"), 2000);
       } else {
-        const data = await response.json();
-        setModalMessage(data.error);
+        console.error("Server returned error:", data);
+        setModalMessage(data.error || "Registration failed");
         setShowErrorModal(true);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      setModalMessage(error.message);
+      setModalMessage(error.message || "Network error occurred");
       setShowErrorModal(true);
     }
   };
@@ -204,6 +185,7 @@ const BeautifulForm = () => {
 
 {showErrorModal && (
         <ErrorModal
+          show={showErrorModal}
           message={modalMessage}
           onClose={() => setShowErrorModal(false)}
         />
