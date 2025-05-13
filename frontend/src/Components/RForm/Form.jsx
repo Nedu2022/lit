@@ -6,6 +6,7 @@ import logo from "../../assets/logo.png";
 import ErrorModal from "../ErrorModal";
 
 
+
 const BeautifulForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -120,6 +121,7 @@ const BeautifulForm = () => {
 
   
   const handleSubmit = async (e) => {
+    
     e.preventDefault();
     
     // First make sure form validation passes
@@ -146,7 +148,7 @@ const BeautifulForm = () => {
     
     try {
       console.log("Submitting registration form...");
-      const response = await fetch("http://localhost:5300/api/register", {
+      const response = await fetch("https://lit-x57y.onrender.com/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
