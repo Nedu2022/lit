@@ -178,12 +178,18 @@ const BeautifulForm = () => {
   
   return (
     <div
-      className="min-h-screen bg-cover bg-center bg-no-repeat"
-      style={{
-        backgroundImage: `url(${litImage})`,
-        backgroundAttachment: "fixed"
-      }}
+      className="relative"
+      // style={{
+      //   backgroundImage: `url(${litImage})`,
+      //   backgroundAttachment: "fixed"
+      // }}
     >
+      <img
+  src={litImage}
+  alt="Background"
+  loading="lazy"
+  className="absolute inset-0 w-full h-full object-cover -z-10"
+/>
 
 {showErrorModal && (
         <ErrorModal
