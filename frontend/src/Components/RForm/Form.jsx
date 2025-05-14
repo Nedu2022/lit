@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Check, AlertCircle, Upload } from "lucide-react";
-import litImage from "../../assets/LIT.jpg";
-import logo from "../../assets/logo.png";
+import litImage from "/LIT.webp";
+import logo from "/logo.webp";
 import ErrorModal from "../ErrorModal";
 
 
